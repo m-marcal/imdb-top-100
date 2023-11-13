@@ -12,11 +12,14 @@ def get_random_imdb_movie():
         "Authorization": f"Bearer {API_KEY}"
     }
 
-    page = 2
+    if API_KEY is None:
+        return None
+
+    page = 3
     movies = list()
     while page > 0:
 
-        url = f"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page={page}"
+        url = f"{BASE_URL}{page}"
         response = requests.get(url, headers=headers).json()
         
         movies.extend(response['results'])
