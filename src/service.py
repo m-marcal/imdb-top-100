@@ -43,7 +43,10 @@ def get_ec2_instance_details():
         private_ip_url = f"{METADATA_BASE_URL}/local-ipv4"
         private_ip = requests.get(private_ip_url, timeout=2).text
 
-        subnet_id_url = f"{METADATA_BASE_URL}/network/interfaces/macs/INSTANCE_MAC/subnet-id"
+        mac_url = f"{METADATA_BASE_URL}/network/interfaces/macs"
+        instance_mac = requests.get(mac_url, timeout=2).text.replace('/', '')
+
+        subnet_id_url = f"{METADATA_BASE_URL}/network/interfaces/macs/{instance_mac}/subnet-id"
         subnet_id = requests.get(subnet_id_url, timeout=2).text
 
         az_url = f"{METADATA_BASE_URL}/placement/availability-zone"
