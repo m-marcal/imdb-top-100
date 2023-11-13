@@ -1,3 +1,3 @@
 #!/bin/bash
 cd src
-gunicorn --bind 0.0.0.0:5000 wsgi:app
+gunicorn -w 4 -k gevent --bind 0.0.0.0:5000 wsgi:app
