@@ -23,8 +23,11 @@ Follow these instructions to set up and run the Flask web app:
 ### Prerequisites
 
 - Python 3.x installed on your system.
+- [Optional] Docker
 
 ### Setup
+
+#### Local Development:
 
 1. Clone the repository to your local machine:
    ```bash
@@ -50,8 +53,13 @@ Follow these instructions to set up and run the Flask web app:
 
 5. Run:
     ```bash
-    # For development
-    python3 src/app.py 
-    ### For Production
-    cd src
-    gunicorn --bind 0.0.0.0:5000 wsgi:app 
+    python3 src/app.py
+
+#### Docker:
+1. Build image:
+    ```bash
+    docker build -t local/imdb-top-100:latest .
+
+2. Run:
+    ```bash
+    docker run -e TIMDb_API_KEY=API_KEY -p80:5000 local/imdb-top-100:latest
