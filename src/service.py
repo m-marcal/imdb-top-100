@@ -20,7 +20,13 @@ def get_random_imdb_movie():
     while page > 0:
 
         url = f"{BASE_URL}{page}"
-        response = requests.get(url, headers=headers).json()
+        try:
+            response = requests.get(url, headers=headers).json()
+        except Exception as e:
+            print(f'Error while trying to get from {url}')
+            print(e)
+            return movies
+
         
         movies.extend(response['results'])
         page -= 1
@@ -35,22 +41,22 @@ def get_ec2_instance_details():
     METADATA_BASE_URL = 'http://169.254.169.254/latest/meta-data'
     try:
         instance_id_url = f"{METADATA_BASE_URL}/instance-id"
-        instance_id = requests.get(instance_id_url, timeout=2).text
+        instance_id = requests.get(instance_id_url, timeout=1).text
 
         instance_type_url = f"{METADATA_BASE_URL}/instance-type"
-        instance_type = requests.get(instance_type_url, timeout=2).text
+        instance_type = requests.get(instance_type_url, timeout=1).text
 
         private_ip_url = f"{METADATA_BASE_URL}/local-ipv4"
-        private_ip = requests.get(private_ip_url, timeout=2).text
+        private_ip = requests.get(private_ip_url, timeout=1).text
 
         mac_url = f"{METADATA_BASE_URL}/network/interfaces/macs"
-        instance_mac = requests.get(mac_url, timeout=2).text.replace('/', '')
+        instance_mac = requests.get(mac_url, timeout=1).text.replace('/', '')
 
         subnet_id_url = f"{METADATA_BASE_URL}/network/interfaces/macs/{instance_mac}/subnet-id"
-        subnet_id = requests.get(subnet_id_url, timeout=2).text
+        subnet_id = requests.get(subnet_id_url, timeout=1).text
 
         az_url = f"{METADATA_BASE_URL}/placement/availability-zone"
-        availability_zone = requests.get(az_url, timeout=2).text
+        availability_zone = requests.get(az_url, timeout=1).text
 
         ec2_instance_details = {
             "InstanceID": instance_id,
