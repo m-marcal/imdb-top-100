@@ -16,11 +16,11 @@
             <div class="col s12 m6 offset-m3">
                 <div class="card">
                     <div class="card-content">
-                        <p><strong>Instance ID:</strong> {{ ec2_instance_details['InstanceID'] }}</p>
-                        <p><strong>Instance Type:</strong> {{ ec2_instance_details['InstanceType'] }}</p>
-                        <p><strong>Private IP:</strong> {{ ec2_instance_details['PrivateIP'] }}</p>
-                        <p><strong>Subnet ID:</strong> {{ ec2_instance_details['SubnetID'] }}</p>
-                        <p><strong>Av. Zone:</strong> {{ ec2_instance_details['AvailabilityZone'] }}</p>
+                        <p><strong>Instance ID:</strong> {{ ec2_instance_details.id }}</p>
+                        <p><strong>Instance Type:</strong> {{ ec2_instance_details.type }}</p>
+                        <p><strong>Private IP:</strong> {{ ec2_instance_details.private_ip }}</p>
+                        <p><strong>Subnet ID:</strong> {{ ec2_instance_details.subnet_id }}</p>
+                        <p><strong>Av. Zone:</strong> {{ ec2_instance_details.av_zone }}</p>
                     </div>
                 </div>
             </div>
@@ -35,12 +35,12 @@
                     <div class="card-content">
                         <div class="row">
                             <div class="col s4">
-                                <img src="https://image.tmdb.org/t/p/w342{{ imdb_movie['poster_path'] }}" alt="{{ imdb_movie['title'] }}" class="responsive-img">
+                                <img src="https://image.tmdb.org/t/p/w342{{ imdb_movie.poster_path }}" alt="{{ imdb_movie.title }}" class="responsive-img">
                             </div>
                             <div class="col s8">
-                                <p><strong>Title:</strong> {{ imdb_movie['title'] }}</p>
+                                <p><strong>Title:</strong> {{ imdb_movie.title }}</p>
                                 <br>
-                                <p><strong>Summary:</strong> {{ imdb_movie['overview'] }}</p>
+                                <p><strong>Summary:</strong> {{ imdb_movie.overview }}</p>
                             </div>
                         </div>
                     </div>

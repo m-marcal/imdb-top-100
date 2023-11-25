@@ -2,6 +2,9 @@ import os
 import requests
 import random
 
+from movie import Movie
+from ec2 import EC2
+
 API_KEY = os.environ.get('TIMDb_API_KEY')
 
 def get_random_imdb_movie():
@@ -11,62 +14,38 @@ def get_random_imdb_movie():
         "accept": "application/json",
         "Authorization": f"Bearer {API_KEY}"
     }
+    
+    movie = Movie()
 
-    if API_KEY is None:
-        return None
+    try:
 
-    page = 3
-    movies = list()
-    while page > 0:
-
+        page = random.randint(0, 40)
         url = f"{BASE_URL}{page}"
-        try:
-            response = requests.get(url, headers=headers).json()
-        except Exception as e:
-            print(f'Error while trying to get from {url}')
-            print(e)
-            return movies
-
+        response = requests.get(url, headers=headers).json()
         
-        movies.extend(response['results'])
-        page -= 1
-
-    if len(movies) > 0:
-        #return random.choice(movies) # IDK, this seems to be vicious
-        return movies[random.randint(0,len(movies) -1)]
-    else:
-        return movies
+        if 'results' in response:
+            recomend = response['results'][random.randint(0, len(response['results']) - 1)]
+            movie.title = recomend['title']
+            movie.poster_path = recomend['poster_path']
+            movie.overview = recomend['overview']
+    except Exception as e:
+        print(e)
+    
+    return movie
 
 def get_ec2_instance_details():
     METADATA_BASE_URL = 'http://169.254.169.254/latest/meta-data'
+    ec2 = EC2()
     try:
-        instance_id_url = f"{METADATA_BASE_URL}/instance-id"
-        instance_id = requests.get(instance_id_url, timeout=1).text
+        ec2.id = requests.get(f"{METADATA_BASE_URL}/instance-id", timeout=1).text
+        ec2.type = requests.get( f"{METADATA_BASE_URL}/instance-type", timeout=1).text
+        ec2.private_ip = requests.get(f"{METADATA_BASE_URL}/local-ipv4", timeout=1).text
+        
+        instance_mac = requests.get(f"{METADATA_BASE_URL}/network/interfaces/macs", timeout=1).text.replace('/', '')
+        ec2.subnet_id = requests.get(f"{METADATA_BASE_URL}/network/interfaces/macs/{instance_mac}/subnet-id", timeout=1).text
 
-        instance_type_url = f"{METADATA_BASE_URL}/instance-type"
-        instance_type = requests.get(instance_type_url, timeout=1).text
-
-        private_ip_url = f"{METADATA_BASE_URL}/local-ipv4"
-        private_ip = requests.get(private_ip_url, timeout=1).text
-
-        mac_url = f"{METADATA_BASE_URL}/network/interfaces/macs"
-        instance_mac = requests.get(mac_url, timeout=1).text.replace('/', '')
-
-        subnet_id_url = f"{METADATA_BASE_URL}/network/interfaces/macs/{instance_mac}/subnet-id"
-        subnet_id = requests.get(subnet_id_url, timeout=1).text
-
-        az_url = f"{METADATA_BASE_URL}/placement/availability-zone"
-        availability_zone = requests.get(az_url, timeout=1).text
-
-        ec2_instance_details = {
-            "InstanceID": instance_id,
-            "InstanceType": instance_type,
-            "PrivateIP": private_ip,
-            "SubnetID": subnet_id,
-            "AvailabilityZone": availability_zone,
-        }
-
-        return ec2_instance_details
+        ec2.av_zone = requests.get(f"{METADATA_BASE_URL}/placement/availability-zone", timeout=1).text
     except Exception as e:
         print(f"Error retrieving EC2 instance details: {str(e)}")
-        return None
+        
+    return ec2
